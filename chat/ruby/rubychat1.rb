@@ -25,10 +25,10 @@ class ChatServer < GServer
     
     loop do 
       # Every 5 seconds check to see if we are receiving any data 
-      if IO.select([io], nil, nil, 2)
+      if IO.select([io], nil, nil, 5)
         # If so, retrieve the data and process it..
         line = io.gets
-      
+
         # If the user says 'quit', disconnect them
         if line =~ /quit/
           @@chat << [my_client_id, ""]
@@ -37,7 +37,7 @@ class ChatServer < GServer
 
         # Shut down the server if we hear 'shutdown'
         self.stop if line =~ /shutdown/
-      
+
         # Add the client's text to the chat array along with the
         # client's ID
         @@chat << [my_client_id, line]      

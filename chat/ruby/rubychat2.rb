@@ -1,69 +1,65 @@
-# taken from https://gist.github.com/767666
+# taken from http://www.rubyinside.com/advent2006/10-gserver.html
 require 'gserver'
 
 class ChatServer < GServer
-  def initialize *args
-    super
-
-    #Keep a list for broadcasting messages
-    @chatters = []
-
-    #We'll need this for thread safety
-    @mutex = Mutex.new 
+  def initialize(*args)
+    super(*args)
+    
+    # Keep an overall record of the client IDs allocated
+    # and the lines of chat
+    @@client_id = 0
+    @@chat = []
   end
-
-  #Send message out to everyone but sender
-  def broadcast(message, sender = nil)
-    #Need to use \r\n for our Windows friends
-    message = message.strip << "\r\n"
-
-    #Mutex for safety - GServer uses threads
-    @mutex.synchronize do
-      @chatters.each do |chatter|
-        begin
-          chatter.print message unless chatter == sender
-        rescue
-          @chatters.delete chatter
-        end
-      end
-    end
-  end
-
-  #Handle each connection
+  
   def serve(io)
-    io.print 'Name: '
-    name = io.gets
-
-    #They might disconnect
-    return if name.nil?
-
-    name.strip!
-
-    broadcast "--+ #{name} has joined +--"
-
-    #Add to our list of connections
-    @mutex.synchronize do
-      @chatters << io
-    end
-
-    #Get and broadcast input until connection returns nil
-    loop do
-      message = io.gets
-
-      unless message =~ /^quit/
-        broadcast "#{name}> [#{message}]", io
-      else
+    # Increment the client ID so each client gets a unique ID
+    @@client_id += 1
+    my_client_id = @@client_id
+    my_position = @@chat.size
+    
+    io.puts("Welcome to the chat, client #{@@client_id}!")
+    
+    # Leave a message on the chat queue to signify this client
+    # has joined the chat
+    @@chat << [my_client_id, ""]
+    
+    loop do 
+      # # Every 2 seconds check to see if we are receiving any data 
+      # if IO.select([io], nil, nil, 2)
+      #   # If so, retrieve the data and process it..
+      #   line = io.gets
+      line = io.readline
+      # If the user says 'quit', disconnect them
+      if line =~ /quit/
+        @@chat << [my_client_id, ""]
         break
       end
-    end
+      
+      # Shut down the server if we hear 'shutdown'
+      self.stop if line =~ /shutdown/
+            
+      # Add the client's text to the chat array along with the
+      # client's ID
+      @@chat << [my_client_id, line]      
 
-    broadcast "--+ #{name} has left +--"
+      # Print any new lines from the chat stream
+      @@chat[my_position..-1].each_with_index do |line, index|
+        io.puts("#{line[0]} says: #{line[1]}")
+      end
+      
+      # Move the position to one past the end of the array
+      my_position = @@chat.size
+      end
+    
   end
 end
 
-#Start up the server on port 7777
-#Accept connections for any IP address
-#Allow up to 100 connections
-#Send information to stderr
-#Turn on informational messages
-ChatServer.new(7000, '0.0.0.0', 100, $stderr, true).start.join
+server = ChatServer.new(1234)
+server.start
+
+server.join
+# loop do
+#   break if server.stopped?
+# end
+
+puts "Server has been terminated"
