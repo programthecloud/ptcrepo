@@ -31,7 +31,7 @@ class ChatServer
   end
   
   bloom :messages do
-    mcast <~ (mcast * nodelist).pairs { |m,n| [n.key, m.val] unless n.key == m.val[0] }
+    chatter <~ (chatter * nodelist).pairs { |m,n| [n.key, m.val] unless n.key == m.val[0] }
   end
   
   bloom :niceties do

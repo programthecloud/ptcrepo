@@ -16,8 +16,8 @@ class ChatClient
   bootstrap { connect <~ [[@server, [ip_port, @nick]]] }
 
   bloom :messages do
-    mcast <~ stdio { |s| [@server, [ip_port, @nick, Time.new.strftime("%I:%M.%S"), s.line]] }
-    stdio <~ mcast { |m| [pretty_print(m.val)] }
+    chatter <~ stdio { |s| [@server, [ip_port, @nick, Time.new.strftime("%I:%M.%S"), s.line]] }
+    stdio <~ chatter { |m| [pretty_print(m.val)] }
   end  
   
   bloom :disconnect do
