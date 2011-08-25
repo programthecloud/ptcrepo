@@ -55,7 +55,7 @@ class ChatServer < GServer
       elsif message =~ /^shutdown/
         exit(0)
       else
-        broadcast "#{name}> [#{message}]", io
+        broadcast "#{name}> #{message}", io
       end
     end
 
