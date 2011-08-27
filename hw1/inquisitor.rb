@@ -76,19 +76,5 @@ class TestCounter < Test::Unit::TestCase
     te.stop_bg
   end
 
-  def setup
-    @id = Process.fork do
-      system EXEC
-    end
-    sleep 1
-  end
-
-  def teardown
-    res = `ps -ef|grep "#{EXEC}"`.split(/\s+/)[2]
-    puts "res is #{res}"
-    Process.kill(9, @id)
-    Process.kill(9, res.to_i)
-    @id = nil
-  end
 end
 
