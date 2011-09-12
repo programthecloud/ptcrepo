@@ -90,11 +90,13 @@ Before we proceed, let's talk about memory/storage -- what we often call the "st
 
 - Atomic state modification: You Can't Have Your Cake and Eat it Too.
 - Copies: Shadow copies.  Copy-on-write.
+
 > "I woke up one morning and looked around the room. Something wasn't right. I
 > realized that someone had broken in the night before and replaced everything
 > in my apartment with an exact replica. I couldn't believe it...I got my
 > roommate and showed him. I said, 'Look at this--everything's been replaced
 > with an exact replica!' He said, 'Do I know you?' -- Steven Wright  
+
 - Histories: You Are What You Eat.  
     - Versions -- snapshotted histories.
 
