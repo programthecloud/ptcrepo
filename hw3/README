@@ -1,0 +1,3 @@
+% cp *.rb /path/to/bud-sandbox/kvs
+% cd /path/to/bud-sandbox
+% ruby kvs/tc_rowo.rb
