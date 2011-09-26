@@ -2,7 +2,6 @@ require 'rubygems'
 require 'bud'
 require 'test/unit'
 require 'kvs/rowo'
-require 'kvs/rowa'
 
 class TestQuorum < Test::Unit::TestCase
   class ROWOBloom
