@@ -18,11 +18,6 @@ module ReadOneWriteOne
     scratch :chosen, [:host]
   end
   
-  # hack to get around spurious stratification error
-  def kvget_response_cols
-    kvget_response.cols
-  end
-  
   bootstrap do
     quorum_config <+ [[0, 0]]
   end
@@ -56,6 +51,6 @@ module ReadOneWriteOne
 
   # forward kvget responses to the original requestor node
   bloom :get_responses do
-    kvget_response <= kvget_response_chan{|k| kvget_response_cols.map{|c| k.send(c)}}
+    kvget_response <= kvget_response_chan{|k| kvget_response.cols.map{|c| k.send(c)}}
   end  
 end
