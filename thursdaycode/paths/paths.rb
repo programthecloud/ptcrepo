@@ -17,7 +17,7 @@ module PathMod
       [l.from, p.to, [l.from] | p.the_nodes]
     end
     path_lengths <= path {|p| [p.from, p.to, p.the_nodes.length-1]}
-    stdio <~ path {|p| [p.inspect] if p.from == "a" and p.to == "d"}
+    stdio <~ path_lengths {|p| [p.inspect] if p.from == "a" and p.to == "d"}
   end
 end
 
