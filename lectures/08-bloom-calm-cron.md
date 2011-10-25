@@ -16,7 +16,7 @@ These are hard questions to answer in general.  Most of the DB and Distributed S
 
 But wait, you say.  I know more about my program's needs than a read/write analysis can understand!  (In fact in many cases you might not even really know your reads and writes very well.)  Can't we go back and answer those questions again through another lens?
 
-    Can my programming environment (language, tools) help me write simple, efficient distributed code, and avoid complicated, expensive distributed protocols?
+> Can my programming environment (language, tools) help me write simple, efficient distributed code, and avoid complicated, expensive distributed protocols?
 
 ## Intuitions
 
@@ -84,6 +84,7 @@ Quick background on Datalog: Think of Bloom restricted as follows:
 
 We'll use Bloom syntax; Datalog is even more compact but most find it harder to read.  Here's the classic links & paths example:
 
+```ruby
     state do
       table :link, [:from, :to] 
       scratch :path, [:from, :to]
@@ -95,6 +96,7 @@ We'll use Bloom syntax; Datalog is even more compact but most find it harder to 
       path <= link
       path <= (path * link).pairs(:to=>:from) {|p,l| [p.from, l.to]}
     end
+```
 
 Basic Datalog is **monotonic**: as you add data and rules to the system, predicates can only grow in cardinality.
 
@@ -126,6 +128,7 @@ Suppose we can't deal with simple monotonic Datalog.  We're hungry for stuff lik
 
 Can we extend Datalog with, say, negated subgoals?  Sure, why not!  Call it Datalog-\neg.
 
+```ruby
     state do
       table :link, [:from, :to] 
       table :hates, [:me, :you]
@@ -145,7 +148,7 @@ Can we extend Datalog with, say, negated subgoals?  Sure, why not!  Call it Data
       enemies <= hate(A, B).
       enemies <= (enemies*hate).pairs(:you=>:me) {|e,h| [e.me, h.you]}
     end
-
+```
 Detail: Closed-World Assumption (negation as failure).
 
 Expressibility: Is this more powerful than Datalog?  Nope, still PTIME.  Just handier.  (This is a [surprising result](http://scholar.google.com/scholar?cluster=1660603149772070343)!)
@@ -154,14 +157,11 @@ Any other problem?  Well, negation is *non-monotonic*: additional (say late-arri
 
 OK, just introduce an ordering constraints: 
 
-    don't "make up your mind" until you have "sealed your input".
+>    don't "make up your mind" until you have "sealed your input".
     
 That's the idea behind *stratified negation*.  If you have a rule with a non-monotonic expression in it, just run all its input tables to fixpoint before evaluating the rule.  Minimal model per stratum, compute strata via LFP bottom-up.
 
 Problem?  A la deadlock, we're worried about rules waiting for each other.  Indeed a program with cyclic dependencies through negation is *not stratifiable*.
-
-
-    budplot calmpaths2.rb CalmPathMod
 
 ## Distributed Stratification?
 How do we "seal an input" in a distributed system?  Aha!  Coordination!
