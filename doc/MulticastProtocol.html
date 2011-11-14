@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: MulticastProtocol
+  
+    &mdash; Documentation by YARD 0.7.3
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" media="screen" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  relpath = '';
+  if (relpath != '') relpath += '/';
+</script>
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+      if (window.top.frames.main) document.body.className = 'frames';
+    </script>
+    
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (M)</a> &raquo; 
+    
+    
+    <span class="title">MulticastProtocol</span>
+  
+  
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a id="class_list_link" href="#">Class List</a>
+  
+    <a id="method_list_link" href="#">Method List</a>
+  
+    <a id="file_list_link" href="#">File List</a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+    
+    <iframe id="search_frame"></iframe>
+    
+    <div id="content"><h1>Module: MulticastProtocol
+  <span class="abstract note title">Abstract</span>
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+    <dt class="r1">Included in:</dt>
+    <dd class="r1"><span class='object_link'><a href="Multicast.html" title="Multicast (module)">Multicast</a></span></dd>
+    
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">multicast.degtiarsun.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <div class="note abstract">
+  <strong>This module is abstract.</strong> 
+  <div class='inline'><p>
+MulticastProtocol is the abstract interface for multicast message delivery.
+</p>
+</div>
+</div>
+<p>
+A multicast implementation should subclass MulticastProtocol and mix in a
+chosen DeliveryProtocol and MembershipProtocol.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#mcast_done-instance_method" title="#mcast_done (instance method)">- (Object) <strong>mcast_done</strong>([:ident], ) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>
+Used to indicate that a new message has been delivered to all members.
+</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#mcast_send-instance_method" title="#mcast_send (instance method)">- (Object) <strong>mcast_send</strong>([:ident], :payload) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>
+Used to request that a new message be delivered to all members in the
+Membership module.
+</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+    
+    
+      <div class="method_details first">
+  <p class="signature first" id="mcast_done-instance_method">
+  
+    - (<tt>Object</tt>) <strong>mcast_done</strong>([:ident], ) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+Used to indicate that a new message has been delivered to all members.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>ident</span>
+      
+      
+        <span class='type'>(<tt>Number</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the unique id of the delivered message
+</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+5</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'multicast.degtiarsun.rb', line 5</span>
+
+<span class='id interface'>interface</span> <span class='id output'>output</span><span class='comma'>,</span> <span class='symbol'>:mcast_done</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:ident</span><span class='rbracket'>]</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="mcast_send-instance_method">
+  
+    - (<tt>Object</tt>) <strong>mcast_send</strong>([:ident], :payload) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+Used to request that a new message be delivered to all members in the
+Membership module.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>ident</span>
+      
+      
+        <span class='type'>(<tt>Number</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+a unique id for the message
+</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>payload</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the message payload
+</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+5</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'multicast.degtiarsun.rb', line 5</span>
+
+<span class='id interface'>interface</span> <span class='id input'>input</span><span class='comma'>,</span> <span class='symbol'>:mcast_send</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:ident</span><span class='rbracket'>]</span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:payload</span><span class='rbracket'>]</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+    
+    <div id="footer">
+  Generated on Sun Nov 13 18:35:51 2011 by 
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.7.3 (ruby-1.9.2).
+</div>
+
+  </body>
+</html>

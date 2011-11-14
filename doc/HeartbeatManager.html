@@ -1,0 +1,710 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: HeartbeatManager
+  
+    &mdash; Documentation by YARD 0.7.3
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" media="screen" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  relpath = '';
+  if (relpath != '') relpath += '/';
+</script>
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+      if (window.top.frames.main) document.body.className = 'frames';
+    </script>
+    
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (H)</a> &raquo; 
+    
+    
+    <span class="title">HeartbeatManager</span>
+  
+  
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a id="class_list_link" href="#">Class List</a>
+  
+    <a id="method_list_link" href="#">Method List</a>
+  
+    <a id="file_list_link" href="#">File List</a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+    
+    <iframe id="search_frame"></iframe>
+    
+    <div id="content"><h1>Module: HeartbeatManager
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">heartbeat.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>
+HeartbeatManager is a module that is meant to be included in a manager
+class. The HeartbeatManager supports dynamic adding and removal of members
+and a custom heartbeat interval.  The HeartbeatManager broadcasts to its
+&#8216;members&#8217; initially with a heartbeat interval and a payload
+that indicates how the clients should respond to the heartbeat interval.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#add_members-instance_method" title="#add_members (instance method)">- (Object) <strong>add_members</strong>([:node], ) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>
+an interface that supports adding new members to the heartbeat monitoring.
+</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#heartbeat_log-instance_method" title="#heartbeat_log (instance method)">- (Object) <strong>heartbeat_log</strong>([:node], :time, :payload) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>
+an output interface that lists the nodes heartbeat responses.
+</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#heartbeat_time-instance_method" title="#heartbeat_time (instance method)">- (Object) <strong>heartbeat_time</strong>([], :time) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>
+an interface used initially to set the heartbeat interval time, can only 
+be set prior to initialization of the manager.
+</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#heartbeats-instance_method" title="#heartbeats (instance method)">- (Object) <strong>heartbeats</strong>([:@dst, :src, :payload], ) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>
+a channel that is used for the manager/client communication.
+</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#remove_members-instance_method" title="#remove_members (instance method)">- (Object) <strong>remove_members</strong>([:node], ) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>
+an interface that supports removing members from the heartbeat monitoring.
+</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#unresponsive_nodes-instance_method" title="#unresponsive_nodes (instance method)">- (Object) <strong>unresponsive_nodes</strong>([:node], :last_heartbeat) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>
+an output interface the lists the nodes that did not respond in the 
+immediately previous heartbeat interval.
+</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+    
+    
+      <div class="method_details first">
+  <p class="signature first" id="add_members-instance_method">
+  
+    - (<tt>Object</tt>) <strong>add_members</strong>([:node], ) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+an interface that supports adding new members to the heartbeat monitoring.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>node</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the client&#8217;s address
+</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+8</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'heartbeat.rb', line 8</span>
+
+<span class='id interface'>interface</span> <span class='id input'>input</span><span class='comma'>,</span> <span class='symbol'>:add_members</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:node</span><span class='rbracket'>]</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="heartbeat_log-instance_method">
+  
+    - (<tt>Object</tt>) <strong>heartbeat_log</strong>([:node], :time, :payload) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+an output interface that lists the nodes heartbeat responses.  The log
+simply records all the heartbeat messages that the manager has received.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>node</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the client&#8217;s address
+</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>time</span>
+      
+      
+        <span class='type'>(<tt>Number</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the absolute time specified in seconds that the heartbeat has been
+received.
+</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>the</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+body of the client&#8217;s response.  Can be any type of object
+representing data or information the node needs to communicate to the
+manager, in most cases a update of the nodes current  status.
+</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+8</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'heartbeat.rb', line 8</span>
+
+<span class='id interface'>interface</span> <span class='id output'>output</span><span class='comma'>,</span> <span class='symbol'>:heartbeat_log</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:node</span><span class='rbracket'>]</span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:time</span><span class='comma'>,</span> <span class='symbol'>:payload</span><span class='rbracket'>]</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="heartbeat_time-instance_method">
+  
+    - (<tt>Object</tt>) <strong>heartbeat_time</strong>([], :time) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+an interface used initially to set the heartbeat interval time, can only 
+be set prior to initialization of the manager.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>time</span>
+      
+      
+        <span class='type'>(<tt>Number</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the heartbeat interval specified in tenths of a second.
+</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+8</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'heartbeat.rb', line 8</span>
+
+<span class='id interface'>interface</span> <span class='id input'>input</span><span class='comma'>,</span> <span class='symbol'>:heartbeat_time</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:time</span><span class='rbracket'>]</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="heartbeats-instance_method">
+  
+    - (<tt>Object</tt>) <strong>heartbeats</strong>([:@dst, :src, :payload], ) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+a channel that is used for the manager/client communication.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>dst</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the destination address of the message.
+</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>src</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the source address of the message.
+</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>payload</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the data/content of the message
+</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+8</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'heartbeat.rb', line 8</span>
+
+<span class='id channel'>channel</span> <span class='symbol'>:heartbeats</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:@dst</span><span class='comma'>,</span> <span class='symbol'>:src</span><span class='comma'>,</span> <span class='symbol'>:payload</span><span class='rbracket'>]</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="remove_members-instance_method">
+  
+    - (<tt>Object</tt>) <strong>remove_members</strong>([:node], ) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+an interface that supports removing members from the heartbeat monitoring.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>node</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the client&#8217;s address
+</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+8</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'heartbeat.rb', line 8</span>
+
+<span class='id interface'>interface</span> <span class='id input'>input</span><span class='comma'>,</span> <span class='symbol'>:remove_members</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:node</span><span class='rbracket'>]</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="unresponsive_nodes-instance_method">
+  
+    - (<tt>Object</tt>) <strong>unresponsive_nodes</strong>([:node], :last_heartbeat) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+an output interface the lists the nodes that did not respond in the 
+immediately previous heartbeat interval. 			  the manager.  A sort of
+absolutely relative time.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>node</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the client&#8217;s address
+</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>last_hearbeat</span>
+      
+      
+        <span class='type'>(<tt>Number</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+the time of the last heartbeat received from this node specified in seconds
+from the initialization of
+</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+8</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'heartbeat.rb', line 8</span>
+
+<span class='id interface'>interface</span> <span class='id output'>output</span><span class='comma'>,</span> <span class='symbol'>:unresponsive_nodes</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:node</span><span class='rbracket'>]</span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='symbol'>:last_heartbeat</span><span class='rbracket'>]</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+    
+    <div id="footer">
+  Generated on Sun Nov 13 18:35:51 2011 by 
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.7.3 (ruby-1.9.2).
+</div>
+
+  </body>
+</html>

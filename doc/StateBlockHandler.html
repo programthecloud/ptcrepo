@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: StateBlockHandler
+  
+    &mdash; Documentation by YARD 0.7.3
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" media="screen" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  relpath = '';
+  if (relpath != '') relpath += '/';
+</script>
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+      if (window.top.frames.main) document.body.className = 'frames';
+    </script>
+    
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (S)</a> &raquo; 
+    
+    
+    <span class="title">StateBlockHandler</span>
+  
+  
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a id="class_list_link" href="#">Class List</a>
+  
+    <a id="method_list_link" href="#">Method List</a>
+  
+    <a id="file_list_link" href="#">File List</a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+    
+    <iframe id="search_frame"></iframe>
+    
+    <div id="content"><h1>Class: StateBlockHandler
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">YARD::Handlers::Ruby::Base</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">YARD::Handlers::Ruby::Base</li>
+          
+            <li class="next">StateBlockHandler</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">ye.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+
+
+  
+
+
+  
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#process-instance_method" title="#process (instance method)">- (Object) <strong>process</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+    
+    
+      <div class="method_details first">
+  <p class="signature first" id="process-instance_method">
+  
+    - (<tt>Object</tt>) <strong>process</strong> 
+  
+
+  
+</p><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'ye.rb', line 4</span>
+
+<span class='kw'>def</span> <span class='id process'>process</span>
+  <span class='id statement'>statement</span><span class='period'>.</span><span class='id last'>last</span><span class='period'>.</span><span class='id last'>last</span><span class='period'>.</span><span class='id each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id stm'>stm</span><span class='op'>|</span>
+    <span class='comment'># regexps for expediency.  please rethink
+</span>    <span class='kw'>if</span> <span class='id stm'>stm</span><span class='period'>.</span><span class='id show'>show</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>(interface \w+,|\w+)\s*:(\w+),\s*\[([^]]*)\]\s*(=&gt;\s*\[([^]]+)\])?</span><span class='regexp_end'>/</span></span>
+      <span class='id object'>object</span> <span class='op'>=</span> <span class='const'>YARD</span><span class='op'>::</span><span class='const'>CodeObjects</span><span class='op'>::</span><span class='const'>MethodObject</span><span class='period'>.</span><span class='id new'>new</span><span class='lparen'>(</span><span class='id namespace'>namespace</span><span class='comma'>,</span> <span class='backref'>$2</span><span class='rparen'>)</span>
+      <span class='id register'>register</span><span class='lparen'>(</span><span class='id object'>object</span><span class='rparen'>)</span>
+      <span class='id object'>object</span><span class='period'>.</span><span class='id dynamic'>dynamic</span> <span class='op'>=</span> <span class='kw'>true</span> 
+      <span class='id object'>object</span><span class='period'>.</span><span class='id parameters'>parameters</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[</span><span class='embexpr_beg'>#{</span><span class='backref'>$3</span><span class='rbrace'>}</span><span class='tstring_content'>]</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='backref'>$5</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rbracket'>]</span><span class='rbracket'>]</span>
+      <span class='id object'>object</span><span class='period'>.</span><span class='id source'>source</span> <span class='op'>=</span> <span class='id stm'>stm</span><span class='period'>.</span><span class='id source'>source</span>
+      <span class='id object'>object</span><span class='period'>.</span><span class='id docstring'>docstring</span> <span class='op'>=</span> <span class='const'>YARD</span><span class='op'>::</span><span class='const'>Docstring</span><span class='period'>.</span><span class='id new'>new</span><span class='lparen'>(</span><span class='id stm'>stm</span><span class='period'>.</span><span class='id comments'>comments</span><span class='comma'>,</span> <span class='id object'>object</span><span class='rparen'>)</span>
+      <span class='id parse_block'>parse_block</span><span class='lparen'>(</span><span class='id stm'>stm</span><span class='comma'>,</span> <span class='symbol'>:owner</span> <span class='op'>=&gt;</span> <span class='id object'>object</span><span class='rparen'>)</span>        
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+    
+    <div id="footer">
+  Generated on Sun Nov 13 18:35:51 2011 by 
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.7.3 (ruby-1.9.2).
+</div>
+
+  </body>
+</html>
