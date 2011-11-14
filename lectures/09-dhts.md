@@ -35,7 +35,7 @@ Karger, et al.  This was a key piece of founding technology at Akamai.
 
   - We'd like a hash function in which the removal of "buckets" only requires moving the data in that bucket.
   - Think about storing object *o* at node *h(o)* mod *n*.  Removing a node changes *n*, and all the data reshuffles.
-  - Instead, we'll hash both machines and data values to numbers on a circle.  Store the data item at the next highest value on the circle that has a machine on it.
+  - Instead, we'll hash both data values *and machines* to numbers on a circle.  Store the data item at the next highest value on the circle that has a machine on it.
   - Upon (clean) machine join or leave, reshuffling involves moving data from only one node.
   
       
@@ -87,6 +87,11 @@ Tolerating Failure
 
   - Replicate data at log *n* successors on the ring, and incorporate into stabilization.
   
+Load Balancing
+
+  - With random assignment, you can have skew as bad as *O*(log *n*) times the average load.
+  - Solution: Each node runs *O*(log *n*) "virtual nodes", which are independently placed on the ring; this spreads things out more evenly.
+  
   
 ## Other DHTs
   - Similar tricks, tend to vary in the way that "fingers" and "routing" are done (and terminology differs)
@@ -109,6 +114,23 @@ Soft state is a persistence contract between a producer and a proxy.
 Nice properties of soft state?
   - vs. "hard" state in which the proxy value must be actively deleted?
 
+## Routing and Indexing again.
+So remind me:
+
+  - What is the difference between indexing data and routing queries?
+    - Was this clear in Napster?  Gnutella?  Chord?
+  - Relationship to smoke signals?
+
+Everything interesting in distributed computing is about rendezvous in space and time.
+
+  - DHT is "supposed" to enable a level of indirection in space
+  - Do they solve the problem of rendezvous in time?  Weak spots?
+    - atomicity of join/leave, stabilization, etc.
+    - replica management
+    - recall soft state: index is just a "proxy", not the data source
+    - atomicity of data update w.r.t. the above
+    - others?
+ 
 ## Some questions about Chord and DHTs in general
 
   - We described how to maintain the routing.  How about maintaining data under updates?
