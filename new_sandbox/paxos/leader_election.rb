@@ -24,10 +24,11 @@ module LeaderMembership
     scratch :not_a_leader, leader.schema
     scratch :new_leader, leader.schema
     scratch :leader_vote, [:src, :address]
-    scratch :unknown_leader_vote_src, leader_vote.schema
-    scratch :unknown_leader_vote_addr, leader_vote.schema
     scratch :new_member, [:host]
+    scratch :really_new_member, new_member.schema
     scratch :member_list, [:src, :members]
+
+    scratch :members_to_send, [:host]
   end
 
   bloom :demux do
@@ -43,15 +44,16 @@ module LeaderMembership
     end
   end
 
-  bloom :elect do
-    unknown_leader_vote_src <= leader_vote.notin(member, :src => :host)
-    unknown_leader_vote_addr <= leader_vote.notin(member, :address => :host)
-    new_member <= unknown_leader_vote_src { |u| [u.src] }
-    new_member <= unknown_leader_vote_addr { |u| [u.address] }
-    add_member <= new_member { |n| [n.host, n.host] }
+  bloom :add_member do
+    really_new_member <= new_member.notin(member, :host => :host)
+    add_member <= really_new_member { |n| [n.host, n.host] }
+  end
 
-    not_a_leader <= leader.notin(me, :host => :address)
-    new_leader <= (not_a_leader * leader_vote * leader).combos do |n, lv, l|
+  bloom :node_elect do
+    new_member <= leader_vote { |u| [u.src] }
+    new_member <= leader_vote { |u| [u.address] }
+
+    new_leader <= (leader_vote * leader).pairs do |lv, l|
       if lv.address < l.host
         [lv.address]
       end
@@ -60,7 +62,10 @@ module LeaderMembership
 
     increment_count <= new_leader { |n| [:mcast_msg] }
     get_count <= [[:mcast_msg]]
-    mcast_send <= (return_count * new_leader).pairs do |r, n|
+    temp :did_add_member <= added_member.group([], count(:ident))
+    mcast_send <= (return_count * 
+                   new_leader *
+                   did_add_member).combos do |r, n, d|
       if r.ident == :mcast_msg
         [r.tally, [:vote, n.host]]
       end
@@ -73,7 +78,22 @@ module LeaderMembership
         [lv.src, ip_port, r.tally, [:vote, l.host]]
       end
     end
-    
+
+    new_member <= member_list { |m| m.members.map { |mem| [mem] } }
+  end
+
+  bloom :leader do
+    members_to_send <= member { |m| [m.host] }
+    increment_count <= did_add_member { |n| [:mcast_msg] }
+    get_count <= [[:mcast_msg]]
+    mcast_send <= (return_count * 
+                   did_add_member * 
+                   leader * me).combos(leader.host => 
+                                       me.address) do |r, d, l, m|
+      if r.ident == :mcast_msg
+        [r.tally, [:members, members_to_send.flat_map]]
+      end
+    end
   end
 
 end
