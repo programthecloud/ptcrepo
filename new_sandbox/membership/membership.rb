@@ -6,6 +6,9 @@ module MembershipProtocol
     interface input, :add_member, [:ident] => [:host]
     interface input, :remove_member, [:ident]
     interface output, :member, [:ident] => [:host]
+
+    interface output, :added_member, [:ident] => [:host]
+    interface output, :removed_member, [:ident] => [:host]
   end
 end
 
@@ -18,5 +21,9 @@ module Membership
     private_members <= add_member
     private_members <- (remove_member * private_members).pairs(:ident => :ident)
     member <= private_members
+  end
+
+  bloom :report_status do
+    added_member <= (add_member * private_members).pairs(:ident => :ident)
   end
 end
