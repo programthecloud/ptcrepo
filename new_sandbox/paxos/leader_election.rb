@@ -52,7 +52,7 @@ module LeaderMembership
     magenta <= leader { |l| ["leader: #{l.host}"] }
     blue <= leader_vote { |lv| ["leader_vote: #{lv.inspect}"] }
     green <= member_list { |ml| ["member_list: #{ml.inspect}"] }
-    cyan <= potential_member
+    #cyan <= potential_member
   end
 
   # Each node, when receiving a message from pipe_out, needs to determine

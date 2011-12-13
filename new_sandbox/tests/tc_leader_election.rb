@@ -31,7 +31,7 @@ class TestLM < Test::Unit::TestCase
     puts "We have 3 hosts: #{hosts.inspect}"
 
     q = Queue.new
-    3.times { q.push(true) }
+    6.times { q.push(true) }
     respondedp = {}
 
     lms.each do |lm|
