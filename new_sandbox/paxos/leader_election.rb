@@ -26,12 +26,13 @@ module LeaderMembership
     # My own address
     table :me, [] => [:host]
 
-    scratch :new_leader, [:host]
-    scratch :temp_leader, leader.schema
+    # Scratches for potential new leaders
+    scratch :new_leader, [] => [:host]
+    scratch :potential_new_leader, [:host]
+    scratch :temp_new_leader, leader.schema
 
     # Scratches for potential new members
     scratch :potential_member, [:host]
-    scratch :potential_member_temp, potential_member.schema
 
     # Scratches to maintain if we received a leader vote message or
     # a list of members
@@ -68,17 +69,23 @@ module LeaderMembership
     add_member <= potential_member { |n| [n.host, n.host] }
   end
 
-  bloom :node_elect do
-    new_leader <= (leader_vote * leader).pairs do |lv, l|
+  # Changes the leader under one of two conditions:
+  # 1. I get a leader_vote proposing a leader with a lower host
+  # 2. Another node has joined without notifying me and its host is
+  # lowest in my list of members.
+  bloom :change_leader do
+    potential_new_leader <= (leader_vote * leader).pairs do |lv, l|
       if lv.host < l.host
         [lv.host]
       end
     end
+    temp_new_leader <= member.group([:host], min(:host))
+    potential_new_leader <= temp_new_leader.notin(leader, :host => :host)
+    new_leader <= potential_new_leader.group([:host], min(:host))
+    leader <+- new_leader
+  end
 
-    temp_leader <= member.group([:host], min(:host))
-    new_leader <= temp_leader.notin(leader, :host => :host)
-    leader <+- new_leader.group([:host], min(:host))
-
+  bloom :node_elect do
     increment_count <= new_leader { |n| [:mcast_msg] }
     get_count <= [[:mcast_msg]]
     temp :did_add_member <= added_member.group([], count(:ident))
