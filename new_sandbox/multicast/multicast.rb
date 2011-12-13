@@ -36,8 +36,8 @@ module Multicast
     # a given mcast id.
     scratch :acked_count, [:ident] => [:num]
   end
-  
-  bloom :snd_mcast do 
+
+  bloom :snd_mcast do
     pipe_in <= (mcast_send * member).pairs do |s, m|
       [m.host, ip_port, s.ident, s.payload] unless m.host == ip_port
     end
@@ -52,7 +52,7 @@ module Multicast
 
   bloom :done_mcast do
     acked_count <= pipe_sent.group([:ident], count(:ident))
-    unacked_count <+- (acked_count * unacked_count).pairs do |a, u|
+    unacked_count <+- (acked_count * unacked_count).pairs(:ident => :ident) do |a, u|
       [a.ident, u.num - a.num]
     end
     mcast_done <= unacked_count {|u| [u.ident] if u.num == 0}
@@ -63,11 +63,9 @@ end
 module BestEffortMulticast
   include BestEffortDelivery
   include Multicast
-  include StaticMembership
 end
 
 module ReliableMulticast
   include ReliableDelivery
   include Multicast
-  include StaticMembership
 end
