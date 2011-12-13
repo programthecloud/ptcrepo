@@ -8,7 +8,7 @@ module MembershipProtocol
     interface output, :member, [:ident] => [:host]
 
     interface output, :added_member, [:ident] => [:host]
-    interface output, :removed_member, [:ident] => [:host]
+#    interface output, :removed_member, [:ident] => [:host]
   end
 end
 

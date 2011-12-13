@@ -4,6 +4,7 @@ require 'membership/membership'
 require 'delivery/delivery'
 require 'multicast/multicast'
 require 'counter/sequences'
+require 'util/colour'
 
 # @abstract LeaderMembership is the module for Paxos leader election.
 # A given node in Paxos should include this module.
@@ -12,12 +13,14 @@ module LeaderMembership
   include MulticastProtocol
   include SequencesProtocol
   include DeliveryProtocol
+  include Colour
 
   # Each node believes it is its own leader when it first starts up.
   bootstrap do
     me <= [[ip_port]]
-    leader <= me
-    add_member <= me { |m| [m.host, m.host] }
+    leader <= [[ip_port]]
+    add_member <= [[ip_port, ip_port]]
+    get_count <= [[:mcast_msg]]
   end
 
   state do
@@ -40,6 +43,13 @@ module LeaderMembership
     scratch :member_list, [:src, :members]
 
     scratch :members_to_send, [:host]
+    scratch :should_increment_mcast_count, [:key]
+  end
+
+  bloom :debug do
+    magenta <= leader { |l| ["leader: #{l.host}"] }
+    blue <= leader_vote { |lv| ["leader_vote: #{lv.inspect}"] }
+    green <= mcast_send { |ms| [ms.inspect] }
   end
 
   # Each node, when receiving a message from pipe_out, needs to determine
@@ -81,9 +91,9 @@ module LeaderMembership
         [lv.host]
       end
     end
-    temp_new_leader <= member.group([:host], min(:host))
+    temp_new_leader <= member.group([], min(:host))
     potential_new_leader <= temp_new_leader.notin(leader, :host => :host)
-    new_leader <= potential_new_leader.group([:host], min(:host))
+    new_leader <= potential_new_leader.group([], min(:host))
     leader <+- new_leader
   end
 
@@ -92,7 +102,6 @@ module LeaderMembership
   # If the one who told me of a "possible" new leader is wrong, send the
   # correct leader back to that source.
   bloom :notify do
-    increment_count <= new_leader { |n| [:mcast_msg] }
     get_count <= [[:mcast_msg]]
     temp :did_add_member <= added_member.group([], count(:ident))
     mcast_send <= (return_count *
@@ -112,18 +121,22 @@ module LeaderMembership
     end
   end
 
+  bloom :increment_mcast_count do
+    should_increment_mcast_count <= temp_new_leader { |n| [:mcast_msg] }
+    should_increment_mcast_count <= did_add_member { |n| [:mcast_msg] }
+    increment_count <= should_increment_mcast_count
+  end
+
   # I send to my members my list of memers if I added someone new and
   # I am the leader
   bloom :leader_specific do
     members_to_send <= member { |m| [m.host] }
-    increment_count <= did_add_member { |n| [:mcast_msg] }
-    get_count <= [[:mcast_msg]]
     mcast_send <= (return_count *
                    did_add_member *
                    leader * me).combos(leader.host =>
                                        me.host) do |r, d, l, m|
       if r.ident == :mcast_msg
-        [r.tally, [:members, members_to_send.flat_map]]
+        [r.tally, [:members, members_to_send.map { |ms| ms }.flatten]]
       end
     end
   end
