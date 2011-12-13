@@ -52,7 +52,7 @@ module Multicast
 
   bloom :done_mcast do
     acked_count <= pipe_sent.group([:ident], count(:ident))
-    unacked_count <+- (acked_count * unacked_count).pairs do |a, u|
+    unacked_count <+- (acked_count * unacked_count).pairs(:ident => :ident) do |a, u|
       [a.ident, u.num - a.num]
     end
     mcast_done <= unacked_count {|u| [u.ident] if u.num == 0}

@@ -52,7 +52,6 @@ module LeaderMembership
     magenta <= leader { |l| ["leader: #{l.host}"] }
     blue <= leader_vote { |lv| ["leader_vote: #{lv.inspect}"] }
     green <= member_list { |ml| ["member_list: #{ml.inspect}"] }
-    #cyan <= potential_member
   end
 
   # Each node, when receiving a message from pipe_out, needs to determine
@@ -110,9 +109,10 @@ module LeaderMembership
     get_count <= [[:mcast_msg]]
     temp :did_add_member <= added_member.group([], count(:ident))
     mcast_send <= (return_count *
-                   new_leader *
-                   did_add_member).combos do |r, n, d|
+                   new_leader).pairs do |r, n|
       if r.ident == :mcast_msg
+        puts "#{n.host} at #{ip_port}"
+        puts "#{member.inspected} at #{ip_port}"
         ["vote_#{r.tally}", [:vote, n.host]]
       end
     end
