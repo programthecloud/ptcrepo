@@ -1,9 +1,9 @@
 require 'rubygems'
 require 'bud'
 require 'membership/membership'
+require 'delivery/delivery'
 require 'multicast/multicast'
 require 'counter/sequences'
-require 'delivery/delivery'
 
 # @abstract LeaderMembership is the module for Paxos leader election.
 # A given node in Paxos should include this module.
@@ -65,8 +65,7 @@ module LeaderMembership
   bloom :add_member do
     potential_member <= leader_vote { |u| [u.src] }
     potential_member <= leader_vote { |u| [u.host] }
-    potential_member_temp <= potential_member.notin(member, :host => :host)
-    add_member <= potential_member_temp { |n| [n.host, n.host] }
+    add_member <= potential_member { |n| [n.host, n.host] }
   end
 
   bloom :node_elect do
@@ -83,7 +82,7 @@ module LeaderMembership
     increment_count <= new_leader { |n| [:mcast_msg] }
     get_count <= [[:mcast_msg]]
     temp :did_add_member <= added_member.group([], count(:ident))
-    mcast_send <= (return_count * 
+    mcast_send <= (return_count *
                    new_leader *
                    did_add_member).combos do |r, n, d|
       if r.ident == :mcast_msg
@@ -106,9 +105,9 @@ module LeaderMembership
     members_to_send <= member { |m| [m.host] }
     increment_count <= did_add_member { |n| [:mcast_msg] }
     get_count <= [[:mcast_msg]]
-    mcast_send <= (return_count * 
-                   did_add_member * 
-                   leader * me).combos(leader.host => 
+    mcast_send <= (return_count *
+                   did_add_member *
+                   leader * me).combos(leader.host =>
                                        me.host) do |r, d, l, m|
       if r.ident == :mcast_msg
         [r.tally, [:members, members_to_send.flat_map]]
