@@ -41,6 +41,7 @@ class TestLM < Test::Unit::TestCase
 
     lms.each do |lm|
       lm.run_bg
+      lm.tick
     end
 
     lms.each do |lm|
