@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'bud'
+require 'backports'
+
 require 'membership/membership'
 require 'delivery/delivery'
 require 'multicast/multicast'
@@ -18,7 +20,7 @@ module LeaderMembership
   # Each node believes it is its own leader when it first starts up.
   bootstrap do
     me <= [[ip_port]]
-    leader <= [[ip_port]]
+    new_leader <= [[ip_port]]
     add_member <= [[ip_port, ip_port]]
     get_count <= [[:mcast_msg]]
   end
@@ -49,7 +51,8 @@ module LeaderMembership
   bloom :debug do
     magenta <= leader { |l| ["leader: #{l.host}"] }
     blue <= leader_vote { |lv| ["leader_vote: #{lv.inspect}"] }
-    green <= mcast_send { |ms| [ms.inspect] }
+    green <= member_list { |ml| ["member_list: #{ml.inspect}"] }
+    cyan <= potential_member
   end
 
   # Each node, when receiving a message from pipe_out, needs to determine
@@ -59,12 +62,12 @@ module LeaderMembership
   # the messages into the appropriate scratches.
   bloom :demux do
     leader_vote <= pipe_out do |p|
-      if p.payload[0] == :vote
+      if p.payload[0] == "vote"
         [p.src, p.payload[1]]
       end
     end
     member_list <= pipe_out do |p|
-      if p.payload[0] == :members
+      if p.payload[0] == "members"
         [p.src, p.payload[1]]
       end
     end
@@ -77,7 +80,9 @@ module LeaderMembership
   bloom :add_member do
     potential_member <= leader_vote { |u| [u.src] }
     potential_member <= leader_vote { |u| [u.host] }
-    potential_member <= member_list { |m| m.members.map { |mem| [mem] } }
+    potential_member <= member_list.flat_map do |ml|
+      ml.members.each.map { |m| [m] }
+    end
     add_member <= potential_member { |n| [n.host, n.host] }
   end
 
@@ -108,7 +113,7 @@ module LeaderMembership
                    new_leader *
                    did_add_member).combos do |r, n, d|
       if r.ident == :mcast_msg
-        [r.tally, [:vote, n.host]]
+        ["vote_#{r.tally}", [:vote, n.host]]
       end
     end
 
@@ -136,7 +141,7 @@ module LeaderMembership
                    leader * me).combos(leader.host =>
                                        me.host) do |r, d, l, m|
       if r.ident == :mcast_msg
-        [r.tally, [:members, members_to_send.map { |ms| ms }.flatten]]
+        ["member_#{r.tally}", [:members, members_to_send.map { |ms| ms }.flatten]]
       end
     end
   end
