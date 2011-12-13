@@ -5,12 +5,15 @@ require 'multicast/multicast'
 require 'counter/sequences'
 require 'delivery/delivery'
 
+# @abstract LeaderMembership is the module for Paxos leader election.
+# A given node in Paxos should include this module.
 module LeaderMembership
   include MembershipProtocol
   include MulticastProtocol
   include SequencesProtocol
   include DeliveryProtocol
 
+  # Each node believes it is its own leader when it first starts up.
   bootstrap do
     me <= [[ip_port]]
     leader <= me
@@ -18,11 +21,13 @@ module LeaderMembership
   end
 
   state do
+    # Currently known leader
     table :leader, [] => [:host]
     table :me, [] => [:host]
 
     scratch :not_a_leader, leader.schema
-    scratch :new_leader, leader.schema
+    scratch :new_leader, [:host]
+    scratch :temp_leader, leader.schema
     scratch :leader_vote, [:src, :host]
     scratch :new_member, [:host]
     scratch :really_new_member, new_member.schema
@@ -58,7 +63,10 @@ module LeaderMembership
         [lv.host]
       end
     end
-    leader <+- new_leader
+
+    temp_leader <= member.group([:host], min(:host))
+    new_leader <= temp_leader.notin(leader, :host => :host)
+    leader <+- new_leader.group([:host], min(:host))
 
     increment_count <= new_leader { |n| [:mcast_msg] }
     get_count <= [[:mcast_msg]]
