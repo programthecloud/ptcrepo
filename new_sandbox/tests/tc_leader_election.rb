@@ -31,7 +31,7 @@ class TestLM < Test::Unit::TestCase
     puts "We have 3 hosts: #{hosts.inspect}"
 
     q = Queue.new
-    10.times { q.push(true) }
+    ports.length.times { q.push(true) }
     respondedp = {}
 
     lms.each do |lm|
@@ -47,9 +47,9 @@ class TestLM < Test::Unit::TestCase
     lms.each do |lm|
       lm.register_callback(:leader) do |cb|
         cb.each do |row|
-          if row.host == "127.0.0.1:3001" and !respondedp[lm]
+          if row.host == "127.0.0.1:#{ports.min}" and !respondedp[lm]
             q.pop
-            #respondedp[lm] = true
+            respondedp[lm] = true
           end
         end
       end
