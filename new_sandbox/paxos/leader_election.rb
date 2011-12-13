@@ -14,16 +14,16 @@ module LeaderMembership
   bootstrap do
     me <= [[ip_port]]
     leader <= me
-    add_member <= me { |m| [m.address, m.address] }
+    add_member <= me { |m| [m.host, m.host] }
   end
 
   state do
     table :leader, [] => [:host]
-    table :me, [] => [:address]
+    table :me, [] => [:host]
 
     scratch :not_a_leader, leader.schema
     scratch :new_leader, leader.schema
-    scratch :leader_vote, [:src, :address]
+    scratch :leader_vote, [:src, :host]
     scratch :new_member, [:host]
     scratch :really_new_member, new_member.schema
     scratch :member_list, [:src, :members]
@@ -51,11 +51,11 @@ module LeaderMembership
 
   bloom :node_elect do
     new_member <= leader_vote { |u| [u.src] }
-    new_member <= leader_vote { |u| [u.address] }
+    new_member <= leader_vote { |u| [u.host] }
 
     new_leader <= (leader_vote * leader).pairs do |lv, l|
-      if lv.address < l.host
-        [lv.address]
+      if lv.host < l.host
+        [lv.host]
       end
     end
     leader <+- new_leader
@@ -71,10 +71,10 @@ module LeaderMembership
       end
     end
 
-    increment_count <= leader_vote { |l| [:unicast, l.address] }
-    get_count <= leader_vote { |l| [:unicast, l.address] }
+    increment_count <= leader_vote { |l| [:unicast, l.host] }
+    get_count <= leader_vote { |l| [:unicast, l.host] }
     pipe_in <= (return_count * leader_vote * leader).combos do |r, lv, l|
-      if lv.address > l.host and r.ident == [:unicast, lv.address]
+      if lv.host > l.host and r.ident == [:unicast, lv.host]
         [lv.src, ip_port, r.tally, [:vote, l.host]]
       end
     end
@@ -89,7 +89,7 @@ module LeaderMembership
     mcast_send <= (return_count * 
                    did_add_member * 
                    leader * me).combos(leader.host => 
-                                       me.address) do |r, d, l, m|
+                                       me.host) do |r, d, l, m|
       if r.ident == :mcast_msg
         [r.tally, [:members, members_to_send.flat_map]]
       end
