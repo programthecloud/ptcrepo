@@ -23,19 +23,29 @@ module LeaderMembership
   state do
     # Currently known leader
     table :leader, [] => [:host]
+    # My own address
     table :me, [] => [:host]
 
-    scratch :not_a_leader, leader.schema
     scratch :new_leader, [:host]
     scratch :temp_leader, leader.schema
+
+    # Scratches for potential new members
+    scratch :potential_member, [:host]
+    scratch :potential_member_temp, potential_member.schema
+
+    # Scratches to maintain if we received a leader vote message or
+    # a list of members
     scratch :leader_vote, [:src, :host]
-    scratch :new_member, [:host]
-    scratch :really_new_member, new_member.schema
     scratch :member_list, [:src, :members]
 
     scratch :members_to_send, [:host]
   end
 
+  # Each node, when receiving a message from pipe_out, needs to determine
+  # the type of message. Messages are determined by the following: the
+  # payload looks like [:vote, :host] or [:members, [:mem1, :mem2, ...]]
+  # Because of the different types of messages, we need to demultiplex
+  # the messages into the appropriate scratches.
   bloom :demux do
     leader_vote <= pipe_out do |p|
       if p.payload[0] == :vote
@@ -49,15 +59,17 @@ module LeaderMembership
     end
   end
 
+  # From leader_vote messages, add the source and the host to a scratch of
+  # potential members. Those who are not in the member list should be
+  # added.
   bloom :add_member do
-    really_new_member <= new_member.notin(member, :host => :host)
-    add_member <= really_new_member { |n| [n.host, n.host] }
+    potential_member <= leader_vote { |u| [u.src] }
+    potential_member <= leader_vote { |u| [u.host] }
+    potential_member_temp <= potential_member.notin(member, :host => :host)
+    add_member <= potential_member_temp { |n| [n.host, n.host] }
   end
 
   bloom :node_elect do
-    new_member <= leader_vote { |u| [u.src] }
-    new_member <= leader_vote { |u| [u.host] }
-
     new_leader <= (leader_vote * leader).pairs do |lv, l|
       if lv.host < l.host
         [lv.host]
@@ -87,7 +99,7 @@ module LeaderMembership
       end
     end
 
-    new_member <= member_list { |m| m.members.map { |mem| [mem] } }
+    potential_member <= member_list { |m| m.members.map { |mem| [mem] } }
   end
 
   bloom :leader do
