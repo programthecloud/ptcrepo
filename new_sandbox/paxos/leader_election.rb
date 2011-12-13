@@ -61,11 +61,13 @@ module LeaderMembership
   end
 
   # From leader_vote messages, add the source and the host to a scratch of
-  # potential members. Those who are not in the member list should be
-  # added.
+  # potential members. From member_list messages, add them to potential
+  # members. Those who are not in the member list should be added to the
+  # membership.
   bloom :add_member do
     potential_member <= leader_vote { |u| [u.src] }
     potential_member <= leader_vote { |u| [u.host] }
+    potential_member <= member_list { |m| m.members.map { |mem| [mem] } }
     add_member <= potential_member { |n| [n.host, n.host] }
   end
 
@@ -85,7 +87,11 @@ module LeaderMembership
     leader <+- new_leader
   end
 
-  bloom :node_elect do
+  # If there is a new leader, multicast the message to everyone in my list
+  # of members.
+  # If the one who told me of a "possible" new leader is wrong, send the
+  # correct leader back to that source.
+  bloom :notify do
     increment_count <= new_leader { |n| [:mcast_msg] }
     get_count <= [[:mcast_msg]]
     temp :did_add_member <= added_member.group([], count(:ident))
@@ -104,11 +110,11 @@ module LeaderMembership
         [lv.src, ip_port, r.tally, [:vote, l.host]]
       end
     end
-
-    potential_member <= member_list { |m| m.members.map { |mem| [mem] } }
   end
 
-  bloom :leader do
+  # I send to my members my list of memers if I added someone new and
+  # I am the leader
+  bloom :leader_specific do
     members_to_send <= member { |m| [m.host] }
     increment_count <= did_add_member { |n| [:mcast_msg] }
     get_count <= [[:mcast_msg]]
