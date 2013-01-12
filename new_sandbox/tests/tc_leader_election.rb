@@ -9,7 +9,7 @@ require 'counter/sequences'
 
 class LM
   include LeaderMembership
-  include Membership
+  include StaticMembership
   include ReliableDelivery
   include ReliableMulticast
   include Counter
