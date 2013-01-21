@@ -24,6 +24,7 @@ module Mapper
   end
   
   bloom do
+    # bug: dups in map_out get lost!!
     map_out <= map_in
     map_unpacked <= map_in{|m| [m.key, m.val[0], m.val[1]]}
     map_out <= map_unpacked.flat_map do |i|
@@ -42,6 +43,7 @@ module Reducer
   end
   
   bloom do
+    # bug: you're losing the previous pagerank of each node; need to sum it in!
     red_unpacked_weights <= reduce_in{|m| [m.key, m.val[0]] if m.val and m.val[1].nil?}
     red_unpacked_adjs <= reduce_in{|m| [m.key, m.val[1]] unless m.val.nil? or m.val[1].nil?}
     flat_reduce <= red_unpacked_weights.group([:ident], sum(:pagerank))

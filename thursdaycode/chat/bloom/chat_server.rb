@@ -14,16 +14,16 @@ class ChatServer
   end
 
   bloom :connect do
-    connected <= connect {|c| c.val unless nodelist.map{|n| n.val}.include? c.val[1]}
-    connect <~ connect do |c| 
-      [c.val[0], [:error, "nickname in use"]] if nodelist.map{|n| n.val}.include? c.val[1]
+    connected <= (connect*nodelist).nopairs {|c,n| c.val if c.val[1] == n.val}.map{|c| c[1]}
+    connect <~ (connect*nodelist).pairs do |c,n| 
+      [c.val[0], [:error, "nickname in use"]] if c.val[1] == n.val
     end
     nodelist <+ connected
     connect <~ connected {|c| [c.key, [:connected, c.val]]}
   end
 
   bloom :disconnect do
-    disconnected <= disconnect.payloads    
+    disconnected <= disconnect.payloads
     nodelist <- disconnected
     disconnect <~ disconnected do |d| 
       (nodelist.include? d) ? [d.key, [:disconnect, d.val]] : [d.key, [:error, "#{d.inspect} not connected"]]

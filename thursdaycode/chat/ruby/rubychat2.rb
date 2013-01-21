@@ -1,4 +1,4 @@
-# taken from http://www.rubyinside.com/advent2006/10-gserver.html
+  # taken from http://www.rubyinside.com/advent2006/10-gserver.html
 require 'gserver'
 
 class ChatServer < GServer
