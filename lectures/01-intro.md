@@ -67,4 +67,4 @@ Website and other stuff:
 Homework:
 
 - [Entrance Questionnaire](http://bit.ly/ptcquestions) at http://bit.ly/ptcquestions
-- [Entrance Test]
+- [Entrance Test](https://github.com/programthecloud/ptcrepo/wiki/EntranceExam)
