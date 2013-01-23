@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'bud'
-require 'chat_protocol'
-require 'chat_pretty'
+require_relative 'chat_protocol'
+require_relative 'chat_pretty'
 
 class ChatServer
   include Bud
@@ -14,24 +14,26 @@ class ChatServer
   end
 
   bloom :connect do
-    connected <= (connect*nodelist).nopairs {|c,n| c.val if c.val[1] == n.val}.map{|c| c[1]}
+    connected <= connect.notin(nodelist){|c,n| c.val if c.val[1] == n.val}.map{|c2| c2[1]}
     connect <~ (connect*nodelist).pairs do |c,n| 
       [c.val[0], [:error, "nickname in use"]] if c.val[1] == n.val
     end
     nodelist <+ connected
+    chatter <~ connected {|c| [ip_port, [ip_port, "ChatMaster", Time.new.strftime("%I:%M.%S"), c.val + " has joined the chat"]]}
     connect <~ connected {|c| [c.key, [:connected, c.val]]}
   end
 
   bloom :disconnect do
-    disconnected <= disconnect.payloads
+    disconnected <= disconnect{|d| d.val}
     nodelist <- disconnected
     disconnect <~ disconnected do |d| 
       (nodelist.include? d) ? [d.key, [:disconnect, d.val]] : [d.key, [:error, "#{d.inspect} not connected"]]
     end
+    chatter <~ disconnected {|c| [ip_port, [ip_port, "ChatMaster", Time.new.strftime("%I:%M.%S"), c.val + " has left the chat"]]}
   end
   
   bloom :messages do
-    chatter <~ (chatter * nodelist).pairs { |m,n| [n.key, m.val] unless n.key == m.val[0] }
+    chatter <~ (chatter * nodelist).pairs { |m,n| [n.key, m.val] unless n.key == m.val[0] or m.val[3] == 'quit'}
   end
   
   bloom :niceties do
