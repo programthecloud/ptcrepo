@@ -36,9 +36,9 @@ class TestExam1 < MiniTest::Unit::TestCase
 
   def test_basic
     do_local_rest(:start_auction, :post, {:name => "anchovies", :end_time => Time.now.to_i + 3})
-    do_local_rest(:bid, :post, {:name => "anchovies", :agent => 1, :bid => 100})
-    do_local_rest(:bid, :post, {:name => "anchovies", :agent => 2, :bid => 300})
-    do_local_rest(:bid, :post, {:name => "anchovies", :agent => 1, :bid => 400})
+    do_local_rest(:bid, :post, {:name => "anchovies", :client => 1, :bid => 100})
+    do_local_rest(:bid, :post, {:name => "anchovies", :client => 2, :bid => 300})
+    do_local_rest(:bid, :post, {:name => "anchovies", :client => 1, :bid => 400})
     
     # running winner
     res = do_local_rest(:status, :get, {:name => "anchovies"})
