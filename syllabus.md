@@ -64,4 +64,4 @@
       * declarative definitions
   10. Wrapup
 
-Optional Textbook: Tannenbaum
+Optional Textbook: [Tannenbaum](http://www.amazon.com/Distributed-Systems-Principles-Paradigms-2nd/dp/0132392275)
