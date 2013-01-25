@@ -8,8 +8,8 @@ class ChatClient
   include Bud
   
   state do
-    channel :chatter
     channel :connect
+    channel :chatter
   end
 
   bootstrap do

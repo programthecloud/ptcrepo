@@ -7,8 +7,8 @@ class ChatServer
   
   state do
     table :nodelist
-    channel :chatter
     channel :connect    
+    channel :chatter
   end
   
   bloom do
