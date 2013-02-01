@@ -57,12 +57,19 @@ class bid:
         name = params.name
         agent = int(params.agent)
         bid = int(params.bid)
-        params["timestamp"] = params.get("timestamp", current_time())
+        params.timestamp = int(params.get("timestamp", current_time()))
         with auction_lock:
             # start_auction is synchronous, so we should know about the auction
             auction = auctions[name]
-            if current_time() < auction['end_time']:
-                if bid > auction['bid'] or (bid == auction['bid'] and params.timestamp < auction['bid_timestamp']):
+            if params.timestamp < auction['end_time']:
+                higher_bid = (bid > auction['bid'])
+                same_bid = (bid == auction['bid'])
+                earlier_time = (params.timestamp < auction['bid_timestamp'])
+                same_time = (params.timestamp == auction['bid_timestamp'])
+                higher_id = (agent > auction['bidder'])
+                replicated = len(sys.argv[2:]) > 0
+                # Unfair tie-breaking, which only applies when the service is replicated
+                if higher_bid or (same_bid and replicated and (earlier_time or (same_time and higher_id))):
                     auction['bid'] = bid
                     auction['bidder'] = agent
                     auction['bid_timestamp'] = params.timestamp
