@@ -1,4 +1,4 @@
-require 'delivery/delivery'
+require 'delivery'
 
 # Note that this provides at-least-once delivery. If you need exactly-once, the
 # receiver-side can record the message IDs that have been received to avoid
