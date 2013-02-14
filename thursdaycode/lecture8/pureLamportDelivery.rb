@@ -9,10 +9,10 @@ module LamportDelivery
   
   
   state do
+    lset :msglog
     lmax :cloq
-    scratch :event, []=>[:val]
   end
-
+  
   bootstrap do
     cloq <+ Bud::MaxLattice.new(0)
   end
@@ -25,9 +25,11 @@ module LamportDelivery
     
   bloom :lamport do
     # A process increments its counter before each event in that process;
-    event <= pipe_sent {|c| [true]}
-    event <= bed.pipe_out {|c| [true]}
-    cloq <= event{|e| cloq+1}
+    # to do this, we'll keep track of all events: i.e., all msg idents sent or received
+    msglog <= pipe_in {|p| [p.ident]}
+    msglog <= pipe_out {|p| [p.ident]}
+    
+    cloq <= msglog.size()
     
     # On receiving a message, the receiver process sets its counter to be 
     # greater than the maximum of its own value and the received value before 
