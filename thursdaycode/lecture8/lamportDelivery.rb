@@ -25,8 +25,8 @@ module LamportDelivery
     
   bloom :lamport do
     # A process increments its counter before each event in that process;
-    event <= pipe_sent {|c| [true]}
-    event <= bed.pipe_out {|c| [true]}
+    event <= pipe_in {|c| [true]}
+    event <= pipe_out {|c| [true]}
     cloq <= event{|e| cloq+1}
     
     # On receiving a message, the receiver process sets its counter to be 
