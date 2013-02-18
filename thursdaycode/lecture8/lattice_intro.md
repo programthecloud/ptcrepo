@@ -1,5 +1,7 @@
 # A Brief Introduction to Bloom Lattices
-In this note, we'll go through some examples to understand the intuition behind Bloom's lattices.  If you're interested in more detail, you might like to read [our research paper on the topic](http://db.cs.berkeley.edu/papers/socc12-blooml.pdf).
+In this note, we'll go through some examples to understand the intuition behind Bloom's lattices, and use them to 
+implement [Lamport timestamps](http://en.wikipedia.org/wiki/Lamport_timestamps).  If you're interested in more detail on Bloom lattices, 
+you might like to read [our research paper on the topic](http://db.cs.berkeley.edu/papers/socc12-blooml.pdf).
 
 ## Setup
 Before working through this, it might be useful to update your version of Bud from the latest in github:
