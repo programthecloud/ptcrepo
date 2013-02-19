@@ -1,9 +1,5 @@
 require 'rubygems'
 require 'bud'
-require 'delivery/reliable'
-require 'delivery/multicast'
-require 'ordering/nonce'
-require 'ordering/serializer'
 
 module KVSProtocol
   state do
@@ -38,85 +34,3 @@ module BasicKVS
   end
 end
 
-module PersistentKVS
-  include KVSProtocol
-  include BasicKVS
-
-  state do
-    sync :kvstate_backing, :dbm, kvstate.schema
-  end
-
-  bootstrap do
-    kvstate <= kvstate_backing
-  end
-
-  bloom do
-    kvstate <+ kvstate_backing do |b|
-      if kvstate.empty?
-        b
-      end
-    end
-    kvstate_backing <+ kvstate
-    kvstate_backing <- kvstate_backing.notin(kvstate, :key => :key)
-    kvstate_backing <- (kvstate_backing * kvstate).pairs(:key => :key) do |b, s|
-      if b.value != s.value
-        b
-      end
-    end
-  end
-end
-
-module ReplicatedKVS
-  include KVSProtocol
-  include MulticastProtocol
-  include MembershipProtocol
-  import BasicKVS => :kvs
-
-  bloom :local_indir do
-    kvs.kvdel <= kvdel
-    kvs.kvget <= kvget
-    kvget_response <= kvs.kvget_response
-  end
-
-  bloom :puts do
-    # if I am the master, multicast store requests
-    mcast_send <= kvput do |k|
-      unless member.include? [k.client]
-        [k.reqid, ["put", [@addy, k.key, k.reqid, k.value]]]
-      end
-    end
-
-    kvs.kvput <= mcast_done do |m|
-      if m.payload[0] == "put"
-        m.payload[1]
-      end
-    end
-
-    # if I am a replica, store the payload of the multicast
-    kvs.kvput <= pipe_out do |d|
-      if d.payload.fetch(1) != @addy and d.payload[0] == "put"
-        d.payload[1]
-      end
-   end
-  end
-
-  bloom :dels do
-    mcast_send <= kvdel do |k|
-      unless member.include? [k.client]
-        [k.reqid, ["del", [@addy, k.key, k.reqid]]]
-      end
-    end
-
-    kvs.kvdel <= mcast_done do |m|
-      if m.payload[0] == "del"
-        m.payload[1]
-      end
-    end
-
-    kvs.kvdel <= pipe_out do |d|
-      if d.payload.fetch(1) != @addy and d.payload[0] == "del"
-        d.payload[1]
-      end
-    end
-  end
-end
