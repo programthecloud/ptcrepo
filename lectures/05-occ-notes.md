@@ -21,7 +21,7 @@ The Validation Phase
     1. Assign each transaction a TN during execution.
     2. Ensure that if you run transactions in order induced by "<" on TNs, you get an equivalent serial schedule.
 
-Suppose TN(Ti) < TN(Tj). Then if one of the following three conditions holds, it’s serializable:
+Consider *some transaction Tj* we are trying to validate.  *For all transactions Ti* such that TN(Ti) < TN(Tj), if one of the following three conditions holds, then Tj is valid:
 
 1. **Condition 1**: Ti completes its write phase before Tj starts its read phase.
 2. **Condition 2**: WS(Ti) &cap; RS(Tj) = &empty; and Ti completes its write phase before Tj starts its write phase.
