@@ -59,19 +59,22 @@ class SimpleMapReduce
   include Reducer
   
   state do
-    file_reader :graph_txt, "graph.txt"
-    scratch :graph_in, [:key]
+    file_reader :graph_txt, "graph.csv"
+    scratch :graph_in, [:key, :adj]
+    scratch :graph_adj, [:key, :adj_list]
     table :graph, [:ident, :val]
     scratch :result, [:ident, :pagerank, :adjacencyList]
   end
   
   bootstrap do
-    graph_in <+ graph_txt{|l| l.text.split(",")}
+    graph_in <+ graph_txt{|l| puts "L is #{l}"; l.last.split(',')}
   end
 
   bloom do
+    graph_adj <= graph_in.group([:key], accum(:adj))
     # graph_in is a scratch fed only by bootstrap, so dealt with exactly once
-    graph <= graph_in{|g| [g.key, [1.0] + [g[1].sort]]}
+    graph <= graph_adj{|g| [g.key, [1.0] + [g.adj_list.to_a.sort]]}
+
     map_in <= graph
     reduce_in <= map_out
     graph <+- reduce_out
