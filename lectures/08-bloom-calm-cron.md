@@ -121,7 +121,7 @@ Now ask yourself:
 
 Cool!  Pure datalog is order-insensitive, requires no coordination.
 
-OK, but that's not much of a language is it?  *Amazingly, it is.  [Datalog is PTIME-complete](http://portal.acm.org/citation.cfm?id=802186), so any polynomial algorithm can be written in Datalog.*  It is not known, however, whether this can be made efficient w.r.t. constant factors in general, nor whether programmers will ever learn to write code this way.
+OK, but that's not much of a language is it?  *Amazingly, it is.  [Datalog is PTIME-complete](http://portal.acm.org/citation.cfm?id=802186), so any polynomial algorithm can be written in Datalog.*  (Technically, semi-positive Datalog is PTIME-complete.) It is not known, however, whether this can be made efficient w.r.t. constant factors in general, nor whether programmers will ever learn to write code this way.
 
 ### Bloom roots II: Stratified Negation
 Suppose we can't deal with simple monotonic Datalog.  We're hungry for stuff like reduce, notin, group, argxxx!
@@ -145,7 +145,7 @@ Can we extend Datalog with, say, negated subgoals?  Sure, why not!  Call it Data
         path <= link
         path_buf <= (path * link).pairs(:to=>:from) {|p,l| [p.from, l.to] }
         path <= path_buf.notin(enemies)
-        enemies <= hate
+        enemies <= hate 
         enemies <= (enemies*hate).pairs(:you=>:me) {|e,h| [e.me, h.you]}
         stdio <~ path_buf.inspected
     end
@@ -176,14 +176,17 @@ C => LM?  All consistent programs are monotonic?  Well, not on their face anyway
 
 LM + Coord => C.  If we introduce coordination at the stratification boundaries of a distributed Datalog program, we get an order-insensitive program.  Proof seems pretty easy, again.
 
-And we can check C syntactically!  (Well, we can check it conservatively that way.)
+And we can check LM syntactically!  (Well, we can check it conservatively that way.)
+
+Now: extend notion of Monotonicity to any Lattices!
 
 ## CRON
 
 [CRON Hypothesis](http://databeta.wordpress.com/2010/12/03/the-cron-principle/): Causality Required Only for Non-Monotonic logic.
 
-Pretty confident conjecture: Monotonic programs don't even require causal orders.  
-Conjecture: Non-monotonic programs require casual ordering.
+Pretty confident conjecture: Monotonic programs don't require causal orders.  (Proved by Ameloot and Van den Bussche.)
+
+Conjecture: Non-monotonic programs require casual ordering. (Or equivalently, "every program that tolerates non-causality is equivalent to a positive program".  Disproved by Ameloot and Van den Bussche.)
 
 Thought experiments:
 
@@ -196,7 +199,9 @@ Thought experiments:
 
 ## Fateful Time Conjecture and Barrier Complexity.
 
-Hypothesis: The purpose of time is to seal fate.  Any other use of time is a waste of time.  
+When to use ``<+``, when to use ``<=``.
+
+Hypothesis: The purpose of time is to "seal fate".  Any other use of time is a waste of time.  
 
 We want to measure the cost of a program based on its minimum required number of ticks.  This is the complexity measure for distributed systems.
 
@@ -208,4 +213,4 @@ Let's evaluate the questions at the top, thinking about Bloom/CALM:
   2. **Avoiding complexity**: Can I rewrite my programs in a way that avoids the need for coordination?  Always?
       * *Answer: It appears that we should not need any of those techniaues, in theory, for any polynomial-time (i.e. reasonable) tasks.  Open question whether that's practical.*
   3. **Encapsulating complexity**:  Can I solve my distributed systems problems once in a reusable library and hide the complexity?
-      * *Answer: Well, you can guarantee that a module guards all its non-monotonicity with some coordination protocol.  You still have to *use* it monotonically.  
+      * *Answer: Well, you can guarantee that a module guards all its non-monotonicity with some coordination protocol.  You can similarly build a coordination service of some kind and defer to it, **if** you call out to it intelligently.
