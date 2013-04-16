@@ -130,23 +130,24 @@ Can we extend Datalog with, say, negated subgoals?  Sure, why not!  Call it Data
 
 ```ruby
     state do
-      table :link, [:from, :to] 
-      table :hates, [:me, :you]
-      scratch :path, [:from, :to]
-      scratch :path_buf, [:from, :to]
-      scratch :enemies, [:me, :you]
+        table :link, [:from, :to] 
+        table :hate, [:me, :you]
+        scratch :path, [:from, :to]
+        scratch :path_buf, [:from, :to]
+        scratch :enemies, [:me, :you]
     end
-    
+
     bootstrap do
-      link <+ [['a', 'b'], ['a', 'c'], ['a', 'd'], ['a', 'e']. ['a','f']]
-      hate <+ [['b', 'e'], ['e', 'c']]
-    
+        link <+ [['a', 'b'], ['a', 'c'], ['a', 'd'], ['a', 'e'], ['a','f']]
+        hate <+ [['b', 'e'], ['e', 'c']]
+    end
     bloom do
-      path <= link
-      path_buf <= (path * link).pairs(:to=>:from) {|p,l| [p.from, l.to] }
-      path <= path_buf.notin(enemies).
-      enemies <= hate(A, B).
-      enemies <= (enemies*hate).pairs(:you=>:me) {|e,h| [e.me, h.you]}
+        path <= link
+        path_buf <= (path * link).pairs(:to=>:from) {|p,l| [p.from, l.to] }
+        path <= path_buf.notin(enemies)
+        enemies <= hate
+        enemies <= (enemies*hate).pairs(:you=>:me) {|e,h| [e.me, h.you]}
+        stdio <~ path_buf.inspected
     end
 ```
 Detail: Closed-World Assumption (negation as failure).
