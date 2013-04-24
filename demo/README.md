@@ -70,7 +70,10 @@ Overwriting KVS:
 Plot of distributed SpeakerPersist (AKA append-only, unordered key/value store)
 
 
-<img src=kvs.png width=30%>
+<img src=kvs.png width=10%>
 
 Plot of distributed MutableSpeakerPersist (AKA KVS)
+
+
+<img src=kvs.png width=10%>
 
