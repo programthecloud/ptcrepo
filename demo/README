@@ -1,4 +1,4 @@
-
+Communication: a speaker and a listener
 
         module Rendezvous
           state do
@@ -11,6 +11,8 @@
           end
         end
 
+Rendezvous as join:
+
         module SynchronousRendezvous
           include Rendezvous
           bloom do
@@ -18,22 +20,22 @@
           end
         end
 
+Speaker persists (AKA shared memory):
+
         module SpeakerPersist
           include Rendezvous
           state do
-            # demo induction, perhaps, then undo...
-            #scratch :spoken, [:subject, :val]
             table :spoken, [:subject, :val]
           end
           bloom :persist do
             spoken <= speak
-            #spoken <+ spoken
           end
           bloom do
             hear <= (spoken*listen).pairs(:subject=>:subject) {|s,l| [l.ident, s.subject, s.val]}
           end
         end
 
+Listener persists (AKA message passing):
 
         module ListenerPersist
           include Rendezvous
@@ -46,6 +48,8 @@
           end
         end
 
+
+Overwriting KVS:
 
         module MutableSpeakerPersist
           include Rendezvous
