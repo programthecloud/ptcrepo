@@ -1,3 +1,5 @@
+[Slides](slides.pptx)
+
 Communication: a speaker and a listener
 
         module Rendezvous
