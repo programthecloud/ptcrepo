@@ -70,3 +70,5 @@ Overwriting KVS:
 Plot of distributed SpeakerPersist (AKA append-only, unordered key/value store)
 
 ![KVS1](kvs1.svg)
+
+<embed src="kvs1.svg" width="100%" height="60%" type="image/svg+xml" pluginspage="http://www.adobe.com/svg/viewer/install/" />
