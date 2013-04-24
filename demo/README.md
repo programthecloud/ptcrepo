@@ -66,3 +66,7 @@ Overwriting KVS:
             hear <= (spoken*listen).pairs(:subject=>:subject) {|s,l| [l.ident, s.subject, s.val]}
           end
         end
+
+Plot of distributed SpeakerPersist (AKA append-only, unordered key/value store)
+
+![KVS1](kvs1.svg)
