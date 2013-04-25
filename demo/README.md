@@ -1,4 +1,6 @@
-[Slides](slides.pptx)
+Note: This is an initial dump of the interactive coding demo presented at Northern California DB Day 2013.  This in a work in progress: we will flush out the narrative soon.
+
+Talk [Slides](slides.pptx)
 
 Communication: a speaker and a listener
 
