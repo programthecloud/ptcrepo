@@ -56,7 +56,7 @@ Listener persists (AKA message passing):
           end
         end
 
-Observe that when we distribute SpeakerPersists, it behaves like a key/value store.  
+Observe that when we [distribute](proxy.rb) SpeakerPersists, it behaves like a key/value store.  
  * Substitute PUT for speak, GET for listen, RESPONSE for hear.
 
 When we distribute ListenerPersists, it behaves like a pub/sub system.
