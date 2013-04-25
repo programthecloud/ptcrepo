@@ -90,8 +90,3 @@ nondeterministic contents (as well as orderings), in different runs or on differ
 
 <img src=kvs.png width=20%>
 
-Plot of distributed MutableSpeakerPersist (AKA KVS)
-
-
-<img src=kvs.png width=20%>
-
