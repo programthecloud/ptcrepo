@@ -60,6 +60,7 @@ Observe that when we [distribute](proxy.rb) SpeakerPersists, it behaves like a k
  * Substitute PUT for speak, GET for listen, RESPONSE for hear.
 
 When we distribute ListenerPersists, it behaves like a pub/sub system.
+ * PUBLISH for speak, SUBSCRIBE for listen, DELIVER for hear.
 
 
 ## Part 3: Assessing the need for coordination protocols
