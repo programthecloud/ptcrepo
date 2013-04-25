@@ -88,5 +88,5 @@ of the system:
 Again, our analysis confirms the intuiton that a mutable KVS will be sensitive to the order in which PUTs occur.  The red coloring indicates potentially
 nondeterministic contents (as well as orderings), in different runs or on different replicas.
 
-<img src=kvs.png width=20%>
+<img src=kvs2.png width=20%>
 
