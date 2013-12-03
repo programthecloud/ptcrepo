@@ -68,7 +68,7 @@ When we distribute ListenerPersists, it behaves like a pub/sub system.
 But our "key/value store" behaves strangely; it appends values rather than replacing them, and doesn't record the order in which puts occur.  In return
 for this odd behavior, we get some very nice properties:
 
- * Regardless of the order of the PUTs, GETs eventually return a single, determininstic result.  This pseudo-kvs is eventually consistent.
+ * Regardless of the order of the PUTs, GETs eventually return a single, deterministic result.  This pseudo-kvs is eventually consistent.
  * At any time, GETs return a subset of the result.  We need never retract the consequences of a GET.
 
 Our analysis and visualization confirms these intuitions.  The yellow coloring of the graph indicates uncertainly about ordering, due to asynchronous
