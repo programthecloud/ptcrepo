@@ -1,3 +1,5 @@
+require 'rubygems'
+require 'bud'
 require './rendezvous'
 
 module Debug
@@ -8,14 +10,14 @@ end
 
 class Luck
   include Bud
-  include SimpleRendezvous
+  include SynchronousRendezvous
   include Debug
 end
 
 class SP
   include Bud
-  include SenderPersist
-  #include Mutable
+  include SpeakerPersist
+  #include MutableSpeakerPersist
   include Debug
 end
 
