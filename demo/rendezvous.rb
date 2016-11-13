@@ -10,14 +10,14 @@ module RendezvousAPI
 end
 
 module SynchronousRendezvous
-  include Rendezvous
+  include RendezvousAPI
   bloom do
     hear <= (speak*listen).pairs(:subject=>:subject) {|s,l| [l.ident, s.subject, s.val]}
   end
 end
 
 module SpeakerPersist
-  include Rendezvous
+  include RendezvousAPI
   state do
     # demo induction, perhaps, then undo...
     #scratch :spoken, [:subject, :val]
@@ -34,7 +34,7 @@ end
 
 
 module ListenerPersist
-  include Rendezvous
+  include RendezvousAPI
   state do
     table :listening, [:ident, :subject]
   end
@@ -46,7 +46,7 @@ end
 
 
 module MutableSpeakerPersist
-  include Rendezvous
+  include RendezvousAPI
   state do
     table :spoken, [:subject, :val]
   end
