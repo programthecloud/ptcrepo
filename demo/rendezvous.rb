@@ -1,50 +1,52 @@
+# Synchronous Rendezvous
 module SynchronousRendezvous
   include RendezvousAPI
-  bloom do
+  bloom {
     hear <= (speak*listen).pairs(:subject=>:subject) {|s,l| [l.ident, s.subject, s.val]}
-  end
+  }
 end
 
+# Speaker Persists (a.k.a. Buffered Messages)
 module SpeakerPersist
   include RendezvousAPI
-  state do
-    # demo induction, perhaps, then undo...
-    #scratch :spoken, [:subject, :val]
+  state {
     table :spoken, [:subject, :val]
-  end
-  bloom :speaker_persist do
+  }
+  bloom :speaker_persist {
     spoken <= speak
-    #spoken <+ spoken
-  end
-  bloom do
+  }
+  bloom {
     hear <= (spoken*listen).pairs(:subject=>:subject) {|s,l| [l.ident, s.subject, s.val]}
-  end
+  }
 end
 
-
+# Listener persists (a.k.a. Subscriptions)
 module ListenerPersist
   include RendezvousAPI
-  state do
+  state {
     table :listening, [:ident, :subject]
-  end
-  bloom :listener_persist do
+  }
+  bloom :listener_persist {
     listening <= listen
-  end
-  bloom do
     hear <= (speak*listening).pairs(:subject=>:subject) {|s,l| [l.ident, s.subject, s.val]}
-  end
+  }
+end
+
+# Both Persist (Symmetric Join)
+module BothPersist
+  include RendezvousAPI
+  include SpeakerPersist
+  include ListenerPersist
 end
 
 module MutableSpeakerPersist
   include RendezvousAPI
-  state do
+  state {
     table :spoken, [:subject, :val]
-  end
-  bloom :persist do
+  }
+  bloom :persist {
     spoken <+ speak
     spoken <- (speak * spoken).rights(:subject => :subject)
-  end
-  bloom do
     hear <= (spoken*listen).pairs(:subject=>:subject) {|s,l| [l.ident, s.subject, s.val]}
-  end
+  }
 end

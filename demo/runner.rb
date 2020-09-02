@@ -32,8 +32,7 @@ end
 
 class Both
   include Bud
-  include SpeakerPersist
-  include ListenerPersist
+  include BothPersist
   include Debug
 end
 

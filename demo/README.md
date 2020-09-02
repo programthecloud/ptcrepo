@@ -9,7 +9,7 @@
 ## Part 1: Communication as rendezvous in time and space.
 Communication happens via rendezvous: two agents—a speaker and a listener—appear at the same place at the same time to hand off a message.
 
-Let's begin by defining input interfaces for the agents to request to `speak` and `listen` on various `subject`s. We will also add an output interface to record the fact that the listener `hear`s something; we'll pass that along to `stdio`.
+Let's begin by defining input interfaces for the agents to request to `speak` and `listen` on various `subject`s. 
 
 `rendezvous_api.rb`
 ```ruby
@@ -18,9 +18,6 @@ Let's begin by defining input interfaces for the agents to request to `speak` an
       interface input, :speak, [:subject, :val]
       interface input, :listen, [:ident, :subject]
       interface output, :hear, [:hear_id, :subject, :val]
-    }
-    bloom {
-      stdio <~ hear.inspected
     }
   }
 ```
@@ -97,33 +94,23 @@ That works too. Whenever a message arrives, it is paired with all the subscripti
 message arrives to early, it won't get caught by a late-arriving `listen`er.
 
 To remove any concern about these race conditions, we can have both sides
-persist. In the code below, it won't matter whether `speak` or `listen` goes 
-first. Convince yourself of that by reading the code -- one of the two 
+persist. The `include` "mix-in" Ruby directives copy the code from both `SpeakerPersist` and `ListenerPersist` into the `BothPersist` module. 
+In the resulting module, it won't matter whether `speak` or `listen` goes 
+first. Convince yourself of that by looking over all the rules being
+`include`d -- for each pair of events `speak` and `listen`, one of the two 
 rules that populate `hear` will always match the second-arriving event to the
 first-arriving event that was persisted! (This is known as a *symmetric join*
 in the database literature, and it works well for streaming sources like 
-unpredictabl event streams.)
+unpredictable event streams.)
 
 `rendezvous.rb`
 ```ruby
   # Both Persist (Symmetric Join)
   module BothPersist
     include RendezvousAPI
-    state {
-      table :spoken, [:subject, :val]
-      table :listening, [:ident, :subject]
-    }
-    bloom {
-      listening <= listen
-      spoken <= speak
-      hear <= (speak*listening).pairs(:subject=>:subject) {|s,l| 
-        [l.ident, s.subject, s.val]
-      }
-      hear <= (listen*spoken).pairs(:subject=>:subject) {|l,s| 
-        [l.ident, s.subject, s.val]
-      }
-    }
-  }
+    include SpeakerPersist
+    include ListenerPersist
+  end
 ```
 ### Summing Up
 We've seen how communication handoffs involve rendezvous in space and time. In
@@ -205,7 +192,7 @@ merge (`<=`) of __speak__ into __spoken__ with a pair of rules that atomically e
   spoken <- (speak * spoken).rights(:subject => :subject)
 ```
 
-(In the second line above, the `rights` commandkeeps only the attributes associated with the right-hand-table of the join of `speak` and `spoken`. So the line identifies the entries in `spoken` that match the subject of `speak`, and scheduled them for deletion before the next tick.)
+(In the second line above, the `rights` command keeps only the attributes associated with the right-hand-table of the join of `speak` and `spoken`. So the line identifies the entries in `spoken` that match the subject of `speak`, and scheduled them for deletion before the next tick.)
 
 As you can imagine, mutable stores are sensitive to race conditions: the value on a `GET` is the most recent value that was `PUT`, and all those requests are subject to order uncertainty thanks to the use of `channel`s.
 
