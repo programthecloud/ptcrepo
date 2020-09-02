@@ -1,21 +1,22 @@
 require 'rubygems'
 require 'bud'
+require './rendezvous_api.rb'
 require './rendezvous.rb'
 require './proxy.rb'
 
 class RendezvousAgent
   include Bud
-  include RendezvousAtProxy
+  include RendezvousAtServer
 end
 
-class SpeakerPersistProxyAgent
+class SpeakerPersistServer
   include Bud
-  include Proxy
+  include JoinServer
 end
 
 
-proxy = SpeakerPersistProxyAgent.new(:port=>SERVERPORT)
-proxy.run_bg
+server = SpeakerPersistServer.new(:port=>SERVERPORT)
+server.run_bg
 
 speaker = RendezvousAgent.new
 speaker.run_bg
@@ -23,11 +24,11 @@ listener = RendezvousAgent.new
 listener.run_bg
 
 speaker.sync_do do |s|
-  speaker.speak <+ [['fire', speaker.budtime]]
+  speaker.speak <+ [['greet', "Hello from " + speaker.port.to_s + ' at tick ' + speaker.budtime.to_s]]
 end
 
 listener.sync_do do |l|
-  listener.listen <+ [['peter', 'fire']]
+  listener.listen <+ [['alice', 'greet']]
 end
 sleep 2
 

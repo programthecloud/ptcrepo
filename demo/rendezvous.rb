@@ -1,11 +1,3 @@
-module RendezvousAPI
-  state do
-	  interface input, :speak, [:subject, :val]
-  	interface input, :listen, [:ident, :subject]
-  	interface output, :hear, [:hear_id, :subject, :val]
-  end
-end
-
 module SynchronousRendezvous
   include RendezvousAPI
   bloom do
@@ -35,12 +27,57 @@ module ListenerPersist
   state do
     table :listening, [:ident, :subject]
   end
-  bloom do
+  bloom :persist do
     listening <= listen
+  end
+  bloom do
     hear <= (speak*listening).pairs(:subject=>:subject) {|s,l| [l.ident, s.subject, s.val]}
   end
 end
 
+module BothPersist
+  include RendezvousAPI
+  state do
+    table :spoken, [:subject, :val]
+    table :listening, [:ident, :subject]
+  end
+  bloom do
+    listening <= listen
+    spoken <= speak
+    hear <= (speak*listening).pairs(:subject=>:subject) {|s,l| 
+      [l.ident, s.subject, s.val]
+    }
+    hear <= (listen*spoken).pairs(:subject=>:subject) {|l,s| 
+      [l.ident, s.subject, s.val]
+    }
+  end
+end
+
+module VersionedSpeakerPersist
+  include RendezvousAPI
+  state do
+    scratch :spoken, [:subject] => [:val]
+    lmap :spoken_map
+    lmax :ticker
+  end
+
+  bootstrap do
+    ticker <+ Bud::MaxLattice.new(0)
+  end
+
+  bloom :persist do
+    ticker <+ (ticker + 1)
+    spoken_map <= speak {|s|
+      {s.subject => Bud::VersionLattice.new(s.val, Bud::MaxLattice.new(ticker.reveal))}
+    }
+    spoken <+ spoken_map.to_collection do |k, v|
+                  [k, v]
+    end
+  end
+  bloom do
+    hear <= (spoken*listen).pairs(:subject=>:subject) {|s,l| [l.ident, s.subject, s.val]}
+  end
+end
 
 module MutableSpeakerPersist
   include RendezvousAPI
