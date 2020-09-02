@@ -4,9 +4,6 @@ module RendezvousAPI
   	interface input, :listen, [:ident, :subject]
   	interface output, :hear, [:hear_id, :subject, :val]
   end
-  bloom do
-  	stdio <~ hear.inspected
-  end
 end
 
 module SynchronousRendezvous
